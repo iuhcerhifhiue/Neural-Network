@@ -28,8 +28,8 @@ class CharTokenizer:
     def encode(self, s: str) -> list[int]:
         return [self.stoi[c] for c in s]
 
-    def decode(self, ids) -> str:
-        return "".join(self.itos[i] for i in ids)
+    def decode(self, ids: list[int]) -> str:
+        return "".join(self.itos[int(i)] for i in ids)
 
 
 def load_text(data_dir: str = "./data") -> str:
@@ -65,6 +65,11 @@ def get_batch(data, block_size: int, batch_size: int, device: str):
     Targets are the inputs shifted one position to the right, i.e. for each
     position the model learns to predict the next character.
     """
+    if len(data) <= block_size:
+        raise ValueError(
+            f"Data length ({len(data)}) must be greater than block_size "
+            f"({block_size}) to sample a batch."
+        )
     ix = torch.randint(len(data) - block_size, (batch_size,))
     x = torch.stack([data[i:i + block_size] for i in ix])
     y = torch.stack([data[i + 1:i + 1 + block_size] for i in ix])
