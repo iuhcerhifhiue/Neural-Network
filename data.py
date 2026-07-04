@@ -38,7 +38,14 @@ def load_text(data_dir: str = "./data") -> str:
     path = os.path.join(data_dir, "input.txt")
     if not os.path.exists(path):
         print(f"Downloading corpus -> {path}")
-        urllib.request.urlretrieve(DATA_URL, path)
+        try:
+            urllib.request.urlretrieve(DATA_URL, path)
+        except urllib.error.URLError as e:
+            print(f"Error downloading corpus: {e}")
+            raise IOError(f"Failed to download corpus: {e}")
+        except urllib.error.HTTPError as e:
+            print(f"HTTP Error downloading corpus: {e.code} - {e.reason}")
+            raise IOError(f"Failed to download corpus (HTTP {e.code}): {e.reason}")
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
 
