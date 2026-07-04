@@ -31,7 +31,7 @@ def main():
     model.eval()
 
     encode = lambda s: [stoi[c] for c in s]
-    decode = lambda ids: "".join(itos[int(i)] for i in ids)
+    decode = lambda ids: "".join(itos[i] for i in ids)
 
     start = args.prompt if args.prompt else "\n"
     idx = torch.tensor([encode(start)], dtype=torch.long, device=args.device)
