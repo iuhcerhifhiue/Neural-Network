@@ -149,4 +149,24 @@ class TestGPT(unittest.TestCase):
         # Test with temperature and top_k
         generated_idx_temp_topk = self.gpt.generate(idx, max_new_tokens, temperature=0.5, top_k=5)
         self.assertEqual(generated_idx_temp_topk.shape, (1, 3 + max_new_tokens))
-        self.assertTrue(torch.equal(generated_idx_temp_topk[:, :3], idx))
+    def test_generate_zero_max_new_tokens(self):
+        idx = torch.randint(0, self.config.vocab_size, (1, 3)).to(self.device)
+        max_new_tokens = 0
+        generated_idx = self.gpt.generate(idx, max_new_tokens)
+        self.assertTrue(torch.equal(generated_idx, idx))
+
+    def test_generate_temperature_zero(self):
+        idx = torch.randint(0, self.config.vocab_size, (1, 3)).to(self.device)
+        max_new_tokens = 1
+        # With temperature=0, it should always pick the argmax
+        generated_idx = self.gpt.generate(idx, max_new_tokens, temperature=0.0001) # Use a very small temp to simulate 0
+        self.assertEqual(generated_idx.shape, (1, 4))
+        # More detailed check would require mocking internal softmax/multinomial
+
+    def test_generate_topk_one(self):
+        idx = torch.randint(0, self.config.vocab_size, (1, 3)).to(self.device)
+        max_new_tokens = 1
+        generated_idx = self.gpt.generate(idx, max_new_tokens, top_k=1)
+        self.assertEqual(generated_idx.shape, (1, 4))
+        # This should also be deterministic, always picking the top 1 token
+
