@@ -65,10 +65,19 @@ INDICATORS = {
 }
 
 
+import urllib.error
+
 def _get_json(url: str, timeout: int = 8):
     req = urllib.request.Request(url, headers={"User-Agent": "ask.py/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.URLError as e:
+        print(f"Error fetching URL {url}: {e}", file=sys.stderr)
+        raise  # Re-raise the exception to be caught by the calling function's generic except
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON from URL {url}: {e}", file=sys.stderr)
+        raise  # Re-raise the exception
 
 
 def _fmt_number(n: float) -> str:
