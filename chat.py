@@ -116,14 +116,21 @@ TOOLS = [
 ]
 
 
+import urllib.request, urllib.error
+
 def _post(payload: dict) -> dict:
     req = urllib.request.Request(
         OLLAMA_URL,
         data=json.dumps(payload).encode("utf-8"),
         headers={"Content-Type": "application/json"},
     )
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.URLError as e:
+        raise RuntimeError(f"Ollama connection error: {e}") from e
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"Ollama response JSON error: {e}") from e
 
 
 def _looks_broken(content: str) -> bool:
