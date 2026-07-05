@@ -39,7 +39,6 @@ class CausalSelfAttention(nn.Module):
         self.resid_dropout = nn.Dropout(config.dropout)
         self.n_head = config.n_head
         self.n_embd = config.n_embd
-        self.dropout = config.dropout
 
         # Lower-triangular mask so position t only attends to <= t.
         self.register_buffer(
@@ -117,6 +116,7 @@ class GPT(nn.Module):
         self.apply(self._init_weights)
 
     def _init_weights(self, module):
+        """Initialize weights for Linear and Embedding layers."""
         if isinstance(module, nn.Linear):
             nn.init.normal_(module.weight, mean=0.0, std=0.02)
             if module.bias is not None:
@@ -125,6 +125,7 @@ class GPT(nn.Module):
             nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
     def num_params(self) -> int:
+        """Return the number of parameters in the model."""
         return sum(p.numel() for p in self.parameters())
 
     def forward(self, idx, targets=None):

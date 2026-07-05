@@ -46,7 +46,7 @@ def main():
     p.add_argument("--dropout", type=float, default=0.2)
     p.add_argument("--eval-interval", type=int, default=250)
     p.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
-    p.add_argument("--save", default="ckpt.pt")
+    p.add_argument("--save", default="ckpt.pt", help="path to save the model checkpoint file")
     args = p.parse_args()
 
     torch.manual_seed(1337)
