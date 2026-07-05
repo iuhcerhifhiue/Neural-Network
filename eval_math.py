@@ -7,6 +7,8 @@ Usage:
     python eval_math.py --ckpt ckpt.pt --n 300
 """
 
+import os
+
 import argparse
 
 import torch
