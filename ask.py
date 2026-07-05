@@ -148,7 +148,9 @@ def _wiki_search_title(query: str):
     )
     data = _get_json(url)
     hits = data.get("query", {}).get("search", [])
-    return hits[0]["title"] if hits else None
+    if not hits:
+        return None
+    return hits[0]["title"]
 
 
 def try_wikipedia(question: str):
