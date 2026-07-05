@@ -170,7 +170,8 @@ def try_wikipedia(question: str):
 
     try:
         title = _wiki_search_title(topic)
-    except Exception:
+    except Exception as e:
+        print(f"Error in _wiki_search_title: {e}", file=sys.stderr)
         title = None
     if not title:
         return None
@@ -178,7 +179,8 @@ def try_wikipedia(question: str):
     url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{urllib.parse.quote(title)}"
     try:
         data = _get_json(url)
-    except Exception:
+    except Exception as e:
+        print(f"Error getting Wikipedia summary: {e}", file=sys.stderr)
         return None
     extract = data.get("extract")
     if not extract:
