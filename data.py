@@ -43,9 +43,14 @@ def load_text(data_dir: str = "./data") -> str:
         return f.read()
 
 
-def build_dataset(data_dir: str = "./data", val_frac: float = 0.1):
-    """Load text, build the tokenizer, and split into train/val tensors."""
-    text = load_text(data_dir)
+def build_dataset(data_dir: str = "./data", val_frac: float = 0.1, text: str | None = None):
+    """Build tokenizer + train/val tensors.
+
+    If `text` is given it's used directly (e.g. the generated math corpus);
+    otherwise the tiny-Shakespeare corpus is loaded from disk/download.
+    """
+    if text is None:
+        text = load_text(data_dir)
     tokenizer = CharTokenizer(text)
     data = torch.tensor(tokenizer.encode(text), dtype=torch.long)
     n = int((1 - val_frac) * len(data))

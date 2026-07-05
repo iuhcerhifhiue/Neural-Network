@@ -9,6 +9,7 @@ env/
 data/
 *.pt
 *.ckpt
+*.log
 
 # OS / editor
 .DS_Store

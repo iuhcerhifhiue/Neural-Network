@@ -11,6 +11,7 @@ import argparse
 import torch
 
 from data import build_dataset, get_batch
+from math_data import generate_text
 from model import GPT, GPTConfig
 
 
@@ -32,6 +33,9 @@ def estimate_loss(model, train_data, val_data, cfg, batch_size, device, eval_ite
 
 def main():
     p = argparse.ArgumentParser(description="Train a GPT on character-level text.")
+    p.add_argument("--dataset", default="shakespeare", choices=["shakespeare", "math"])
+    p.add_argument("--math-samples", type=int, default=150000,
+                   help="number of unique problems to generate for --dataset math")
     p.add_argument("--iters", type=int, default=3000)
     p.add_argument("--batch-size", type=int, default=64)
     p.add_argument("--block-size", type=int, default=256)
@@ -48,7 +52,12 @@ def main():
     torch.manual_seed(1337)
     print(f"Using device: {args.device}")
 
-    tokenizer, train_data, val_data = build_dataset()
+    if args.dataset == "math":
+        print(f"Generating {args.math_samples} math problems...")
+        corpus = generate_text(args.math_samples)
+        tokenizer, train_data, val_data = build_dataset(text=corpus)
+    else:
+        tokenizer, train_data, val_data = build_dataset()
     cfg = GPTConfig(
         vocab_size=tokenizer.vocab_size,
         block_size=args.block_size,
